@@ -52,10 +52,22 @@ const usePasskey = () => {
       options: PublicKeyCredentialCreationOptionsJSON;
     }>(import.meta.env.VITE_PASSKEY_API + '/auth/setup', options);
 
-    // TODO: Start registration process
     const attResp = await startRegistration(registrationResponse.options);
-    // TODO: Prepare data for verification
-    // TODO: Fetch and return verification response
+
+    const data = {
+      email: registrationResponse.email,
+      registrationOptions: attResp,
+    };
+
+    const verifyOptions = {
+      ...options,
+      body: JSON.stringify(data),
+    };
+
+    return await fetchData(
+      import.meta.env.VITE_PASSKEY_API + '/auth/verify',
+      verifyOptions,
+    );
   };
 
   // TODO: Define postLogin function
