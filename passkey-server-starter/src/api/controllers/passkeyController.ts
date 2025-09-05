@@ -5,6 +5,9 @@ import {NextFunction, Request, Response} from 'express';
 import CustomError from '../../classes/CustomError';
 import fetchData from '../../utils/fetchData';
 import {generateRegistrationOptions} from '@simplewebauthn/server';
+import {Challenge, PasskeyUserPost} from '../../types/PasskeyTypes';
+import challengeModel from '../models/challengeModel';
+import passkeyUserModel from '../models/passkeyUserModel';
 
 // check environment variables
 if (
@@ -61,15 +64,27 @@ const setupPasskey = async (
       supportedAlgorithmIDs: [-7, -257],
     });
 
-    console.log(regOptions);
+    // console.log(regOptions);
 
-    // const challenge: Challenge = {
-    //   challenge: regOptions.challenge,
-    //   email: userResponse.user.email,
-    // };
+    const challenge: Challenge = {
+      challenge: regOptions.challenge,
+      email: userResponse.user.email,
+    };
 
-    // TODO: Add user to PasskeyUser collection
-    // TODO: Send response with email and options
+    await challengeModel.create(challenge);
+
+    const passkeyUser: PasskeyUserPost = {
+      email: userResponse.user.email,
+      userId: userResponse.user.user_id,
+      devices: [],
+    };
+
+    await passkeyUserModel.create(passkeyUser);
+
+    res.json({
+      email: userResponse.user.email,
+      options: regOptions,
+    });
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
