@@ -67,7 +67,7 @@ const usePasskey = () => {
       body: JSON.stringify(data),
     };
 
-    return await fetchData(
+    return await fetchData<UserResponse>(
       import.meta.env.VITE_PASSKEY_API + '/auth/verify',
       verifyOptions,
     );
