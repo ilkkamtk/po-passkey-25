@@ -11,7 +11,6 @@ import {
 } from '@simplewebauthn/types';
 
 const useUser = () => {
-  // TODO: implement network functions for auth server user endpoints
   const getUserByToken = async (token: string) => {
     const options = {
       headers: {
@@ -39,7 +38,6 @@ const useUser = () => {
   return { getUserByToken, getUsernameAvailable, getEmailAvailable };
 };
 
-// TODO: Define usePasskey hook
 const usePasskey = () => {
   const postUser = async (
     user: Pick<User, 'username' | 'password' | 'email'>,
@@ -52,7 +50,6 @@ const usePasskey = () => {
       body: JSON.stringify(user),
     };
 
-    // TODO: Fetch setup response
     const registrationResponse = await fetchData<{
       email: string;
       options: PublicKeyCredentialCreationOptionsJSON;
@@ -76,14 +73,36 @@ const usePasskey = () => {
     );
   };
 
-  // TODO: Define postLogin function
-  const postLogin = async (email) => {
-    // TODO: Fetch login setup options
-    // TODO: Start authentication process
-    // TODO: Fetch and return login verification response
+  const postLogin = async (email: string) => {
+    const loginOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    };
+
+    const authenticationResponse =
+      await fetchData<PublicKeyCredentialRequestOptionsJSON>(
+        import.meta.env.VITE_PASSKEY_API + '/auth/login/setup',
+        loginOptions,
+      );
+
+    const attResp = await startAuthentication(authenticationResponse);
+    const verifyOptions = {
+      ...loginOptions,
+      body: JSON.stringify({
+        email,
+        authResponse: attResp,
+      }),
+    };
+
+    return await fetchData<LoginResponse>(
+      import.meta.env.VITE_PASSKEY_API + '/auth/login/verify',
+      verifyOptions,
+    );
   };
 
-  // TODO: Return postUser and postLogin functions
   return { postUser, postLogin };
 };
 
