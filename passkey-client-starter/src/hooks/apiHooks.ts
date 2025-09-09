@@ -1,8 +1,14 @@
 import { User } from '@sharedTypes/DBTypes';
 import fetchData from '@/lib/fetchData';
 import { LoginResponse, UserResponse } from '@sharedTypes/MessageTypes';
-import { startRegistration } from '@simplewebauthn/browser';
-// TODO: add imports for WebAuthn functions
+import {
+  startAuthentication,
+  startRegistration,
+} from '@simplewebauthn/browser';
+import {
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+} from '@simplewebauthn/types';
 
 const useUser = () => {
   // TODO: implement network functions for auth server user endpoints
