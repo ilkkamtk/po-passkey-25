@@ -1,5 +1,5 @@
 import {LoginResponse, UserResponse} from '@sharedTypes/MessageTypes';
-import {User} from '@sharedTypes/DBTypes';
+import {User, UserWithNoPassword} from '@sharedTypes/DBTypes';
 import {NextFunction, Request, Response} from 'express';
 import CustomError from '../../classes/CustomError';
 import fetchData from '../../utils/fetchData';
@@ -290,9 +290,11 @@ const verifyAuthentication = async (
     await challengeModel.findOneAndDelete({email: req.body.email});
 
     // Generate and send JWT
-    const userResponse = await fetchData<UserResponse>(
+    const userResponse = await fetchData<UserWithNoPassword>(
       AUTH_URL + '/api/v1/users/' + user.userId,
     );
+
+    console.log(userResponse);
 
     if (!userResponse) {
       next(new CustomError('user not found', 404));
@@ -301,8 +303,8 @@ const verifyAuthentication = async (
 
     const token = jwt.sign(
       {
-        user_id: userResponse.user.user_id,
-        level_name: userResponse.user.level_name,
+        user_id: userResponse.user_id,
+        level_name: userResponse.level_name,
       },
       JWT_SECRET,
     );
@@ -310,7 +312,7 @@ const verifyAuthentication = async (
     const message: LoginResponse = {
       message: 'Login Success',
       token,
-      user: userResponse.user,
+      user: userResponse,
     };
 
     res.json(message);
