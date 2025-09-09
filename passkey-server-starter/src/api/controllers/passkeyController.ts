@@ -1,6 +1,5 @@
 import {UserResponse} from '@sharedTypes/MessageTypes';
 import {User} from '@sharedTypes/DBTypes';
-// TODO: add imports
 import {NextFunction, Request, Response} from 'express';
 import CustomError from '../../classes/CustomError';
 import fetchData from '../../utils/fetchData';
@@ -12,7 +11,12 @@ import {
 import {Challenge, PasskeyUserPost} from '../../types/PasskeyTypes';
 import challengeModel from '../models/challengeModel';
 import passkeyUserModel from '../models/passkeyUserModel';
-import {RegistrationResponseJSON} from '@simplewebauthn/server/script/deps';
+import {
+  RegistrationResponseJSON
+  AuthenticationResponseJSON,
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+} from '@simplewebauthn/types';
 import authenticatorDeviceModel from '../models/authenticatorDeviceModel';
 import {Types} from 'mongoose';
 
@@ -179,8 +183,8 @@ const verifyPasskey = async (
 
 // Generate authentication options handler
 const authenticationOptions = async (
-  req: Request,
-  res: Response,
+  req: Request<{}, {}, {email: string}>,
+  res: Response<>,
   next: NextFunction,
 ) => {
   try {
