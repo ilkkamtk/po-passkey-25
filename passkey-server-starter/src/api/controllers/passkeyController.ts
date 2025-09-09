@@ -12,7 +12,7 @@ import {Challenge, PasskeyUserPost} from '../../types/PasskeyTypes';
 import challengeModel from '../models/challengeModel';
 import passkeyUserModel from '../models/passkeyUserModel';
 import {
-  RegistrationResponseJSON
+  RegistrationResponseJSON,
   AuthenticationResponseJSON,
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
